@@ -32,7 +32,6 @@ var tplFiles = map[string]string{
 
 import (
 	"strings"
-	"time"
 
 	"github.com/swxctx/xmodel/mongo"
 	"github.com/swxctx/xmodel/mysql"
@@ -523,7 +522,6 @@ func Count{{.Name}}ByWhere(whereCond string, arg ...interface{}) (int64, error) 
 const mongoModelTpl = `package model
 
 import (
-	"time"
 	"unsafe"
 
 	"github.com/henrylee2cn/goutil/coarsetime"
