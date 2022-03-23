@@ -1,14 +1,12 @@
 package create
 
 const __tpl__ = `// Command __PROJ_NAME__ is the xmodel tools.
-// The framework reference: https://github.com/xiaoenai/xmodel
+// The framework reference: https://github.com/swxctx/xmodel
 package __TPL__
 
 // __MYSQL_MODEL__ create mysql model
 type __MYSQL_MODEL__ struct {
 	User
-	Log
-	Device
 }
 
 // __MONGO_MODEL__ create mongodb model
@@ -21,14 +19,6 @@ type User struct {
 	Id   int64  ` + "`key:\"pri\"`" + `
 	Name string ` + "`key:\"uni\"`" + `
 	Age  int32
-}
-
-type Log struct {
-	Text string
-}
-
-type Device struct {
-	UUID string ` + "`key:\"pri\"`" + `
 }
 
 type Meta struct {
@@ -44,9 +34,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/xiaoenai/xmodel/mongo"
-	"github.com/xiaoenai/xmodel/mysql"
-	"github.com/xiaoenai/xmodel/redis"
+	"github.com/swxctx/xmodel/mongo"
+	"github.com/swxctx/xmodel/mysql"
+	"github.com/swxctx/xmodel/redis"
 )
 
 // mysqlHandler preset mysql DB handler
@@ -57,13 +47,11 @@ var mongoHandler = mongo.NewPreDB()
 
 var (
 	redisClient *redis.Client
-	cacheExpire time.Duration
 )
 
 
 // Init initializes the model packet.
-func Init(mysqlConfig *mysql.Config, mongoConfig *mongo.Config, redisConfig *redis.Config, _cacheExpire time.Duration) error {
-	cacheExpire=_cacheExpire
+func Init(mysqlConfig *mysql.Config, mongoConfig *mongo.Config, redisConfig *redis.Config) error {
 	var err error
 	if redisConfig != nil {
 		redisClient, err = redis.NewClient(redisConfig)
@@ -136,6 +124,14 @@ func insertZeroDeletedTsField(whereCond string) string {
 `,
 
 	"args/const.gen.go": `package args
+
+import (
+	"time"
+)
+
+// SQL CacheExpire
+const CacheExpire = 24 * time.Hour
+
 ${const_list}
 `,
 
@@ -152,10 +148,10 @@ import (
 	"database/sql"
 	"unsafe"
 
-	"github.com/xiaoenai/glog"
+	"github.com/swxctx/xlog"
 	"github.com/henrylee2cn/goutil/coarsetime"
-	"github.com/xiaoenai/xmodel/mysql"
-	"github.com/xiaoenai/xmodel/sqlx"
+	"github.com/swxctx/xmodel/mysql"
+	"github.com/swxctx/xmodel/sqlx"
 
 	"${import_prefix}/args"
 )
@@ -182,7 +178,7 @@ func ToArgs{{.Name}}Slice(a []*{{.Name}}) []*args.{{.Name}} {
 	return *(*[]*args.{{.Name}})(unsafe.Pointer(&a))
 }
 
-// TableName implements 'github.com/xiaoenai/xmodel'.Cacheable
+// TableName implements 'github.com/swxctx/xmodel'.Cacheable
 func (*{{.Name}}) TableName() string {
 	return "{{.SnakeName}}"
 }
@@ -195,7 +191,7 @@ func (_{{.LowerFirstLetter}} *{{.Name}}) isZeroPrimaryKey() bool {
 	{{end}}return true
 }
 
-var {{.LowerFirstName}}DB, _ = mysqlHandler.RegCacheableDB(new({{.Name}}), cacheExpire, ` + "args.{{.Name}}Sql" + `)
+var {{.LowerFirstName}}DB, _ = mysqlHandler.RegCacheableDB(new({{.Name}}), args.CacheExpire, ` + "args.{{.Name}}Sql" + `)
 
 // Get{{.Name}}DB returns the {{.Name}} DB handler.
 func Get{{.Name}}DB() *mysql.CacheableDB {
@@ -288,7 +284,7 @@ func Upsert{{.Name}}(_{{.LowerFirstLetter}} *{{.Name}}, _updateFields []string, 
 	}
 	err = {{.LowerFirstName}}DB.DeleteCache(_{{.LowerFirstLetter}})
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return {{if .IsDefaultPrimary}}_{{.LowerFirstLetter}}{{range .PrimaryFields}}.{{.Name}}{{end}},{{end}}nil
 }
@@ -327,7 +323,7 @@ func Update{{.Name}}ByPrimary(_{{.LowerFirstLetter}} *{{.Name}}, _updateFields [
 	}
 	err = {{.LowerFirstName}}DB.DeleteCache(_{{.LowerFirstLetter}})
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -366,7 +362,7 @@ func Update{{$.Name}}By{{.Name}}(_{{$.LowerFirstLetter}} *{{$.Name}}, _updateFie
 	}
 	err = {{$.LowerFirstName}}DB.DeleteCache(_{{$.LowerFirstLetter}},"{{.ModelName}}")
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -401,7 +397,7 @@ func Delete{{.Name}}ByPrimary({{range .PrimaryFields}}_{{.ModelName}} {{.Typ}}, 
 		{{range .PrimaryFields}}{{.Name}}:_{{.ModelName}},
 		{{end}} })
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -435,7 +431,7 @@ func Delete{{$.Name}}By{{.Name}}(_{{.ModelName}} {{.Typ}}, deleteHard bool, tx .
 		{{.Name}}:_{{.ModelName}},
 		},"{{.ModelName}}")
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -531,7 +527,7 @@ import (
 	"unsafe"
 
 	"github.com/henrylee2cn/goutil/coarsetime"
-	"github.com/xiaoenai/xmodel/mongo"
+	"github.com/swxctx/xmodel/mongo"
 
 	"${import_prefix}/args"
 )
@@ -548,7 +544,7 @@ func ToArgs{{.Name}}(_{{.LowerFirstLetter}} *{{.Name}}) *args.{{.Name}} {
 	return (*args.{{.Name}})(unsafe.Pointer(_{{.LowerFirstLetter}}))
 }
 
-// TableName implements 'github.com/xiaoenai/xmodel'.Cacheable
+// TableName implements 'github.com/swxctx/xmodel'.Cacheable
 func (*{{.Name}}) TableName() string {
 	return "{{.SnakeName}}"
 }
@@ -561,7 +557,7 @@ func (_{{.LowerFirstLetter}} *{{.Name}}) isZeroPrimaryKey() bool {
 	{{end}}return true
 }
 
-var {{.LowerFirstName}}DB, _ = mongoHandler.RegCacheableDB(new({{.Name}}), time.Hour*24)
+var {{.LowerFirstName}}DB, _ = mongoHandler.RegCacheableDB(new({{.Name}}), args.CacheExpire)
 
 // Get{{.Name}}DB returns the {{.Name}} DB handler.
 func Get{{.Name}}DB() *mongo.CacheableDB {
@@ -584,7 +580,7 @@ func Upsert{{$.Name}}By{{.Name}}({{.ModelName}} {{.Typ}}, updater mongo.M) error
 		// Del cache
 		err2 := {{$.LowerFirstName}}DB.DeleteCache(_{{$.LowerFirstLetter}}, "{{.ModelName}}","deleted_ts")
 		if err2 != nil {
-			glog.Errorf("DeleteCache -> err:%s", err2)
+			xlog.Errorf("DeleteCache -> err:%s", err2)
 		}
 	}
 
@@ -698,7 +694,7 @@ func Delete{{$.Name}}By{{.Name}}({{.ModelName}} {{.Typ}}, deleteHard bool) error
 		// Del cache
 		err2 := {{$.LowerFirstName}}DB.DeleteCache(_{{$.LowerFirstLetter}}, "{{.ModelName}}","deleted_ts")
 		if err2 != nil {
-			glog.Errorf("DeleteCache -> err:%s", err2)
+			xlog.Errorf("DeleteCache -> err:%s", err2)
 		}
 	}
 	return err
@@ -714,6 +710,6 @@ replace github.com/coreos/go-systemd => github.com/coreos/go-systemd/v22 v22.0.0
 require (
 	github.com/henrylee2cn/cfgo v0.0.0-20180417024816-e6c3cc325b21
 	github.com/henrylee2cn/goutil v0.0.0-20191202093501-834eaf50f6fe
-	github.com/xiaoenai/glog v0.0.0-20200611142840-66249c007189
+	github.com/swxctx/xlog v0.0.0-20200611142840-66249c007189
 )
 `

@@ -8,11 +8,11 @@ import (
 	"unsafe"
 
 	"github.com/henrylee2cn/goutil/coarsetime"
-	"github.com/xiaoenai/glog"
-	"github.com/xiaoenai/xmodel/mysql"
-	"github.com/xiaoenai/xmodel/sqlx"
+	"github.com/swxctx/xlog"
+	"github.com/swxctx/xmodel/mysql"
+	"github.com/swxctx/xmodel/sqlx"
 
-	"github.com/xiaoenai/xmodel/example/args"
+	"github.com/swxctx/xmodel/example/args"
 )
 
 // Device comment...
@@ -38,7 +38,7 @@ func ToArgsDeviceSlice(a []*Device) []*args.Device {
 	return *(*[]*args.Device)(unsafe.Pointer(&a))
 }
 
-// TableName implements 'github.com/xiaoenai/xmodel'.Cacheable
+// TableName implements 'github.com/swxctx/xmodel'.Cacheable
 func (*Device) TableName() string {
 	return "device"
 }
@@ -132,7 +132,7 @@ func UpsertDevice(_d *Device, _updateFields []string, tx ...*sqlx.Tx) error {
 	}
 	err = deviceDB.DeleteCache(_d)
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -171,7 +171,7 @@ func UpdateDeviceByPrimary(_d *Device, _updateFields []string, tx ...*sqlx.Tx) e
 	}
 	err = deviceDB.DeleteCache(_d)
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -205,7 +205,7 @@ func DeleteDeviceByPrimary(_uuid string, deleteHard bool, tx ...*sqlx.Tx) error 
 		UUID: _uuid,
 	})
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }

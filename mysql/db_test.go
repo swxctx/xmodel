@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/henrylee2cn/goutil"
-	"github.com/xiaoenai/xmodel/mysql"
-	"github.com/xiaoenai/xmodel/redis"
-	"github.com/xiaoenai/xmodel/sqlx"
-	"github.com/xiaoenai/xmodel/sqlx/reflectx"
+	"github.com/swxctx/xmodel/mysql"
+	"github.com/swxctx/xmodel/redis"
+	"github.com/swxctx/xmodel/sqlx"
+	"github.com/swxctx/xmodel/sqlx/reflectx"
 )
 
 type testTable struct {

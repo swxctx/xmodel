@@ -12,10 +12,10 @@ import (
 
 	"github.com/henrylee2cn/goutil"
 	"github.com/henrylee2cn/goutil/errors"
-	"github.com/xiaoenai/glog"
-	"github.com/xiaoenai/xmodel/redis"
-	"github.com/xiaoenai/xmodel/sqlx"
-	"github.com/xiaoenai/xmodel/sqlx/reflectx"
+	"github.com/swxctx/xlog"
+	"github.com/swxctx/xmodel/redis"
+	"github.com/swxctx/xmodel/sqlx"
+	"github.com/swxctx/xmodel/sqlx/reflectx"
 )
 
 // DB is a wrapper around sqlx.DB and redis.Client.
@@ -123,7 +123,7 @@ func (d *DB) RegCacheableDB(ormStructPtr Cacheable, cacheExpiration time.Duratio
 	}
 
 	if len(priCols) == 0 {
-		glog.Infof("RegCacheableDB(): table '%s.%s' has no primary key", d.dbConfig.Database, tableName)
+		xlog.Infof("RegCacheableDB(): table '%s.%s' has no primary key", d.dbConfig.Database, tableName)
 		return nil, fmt.Errorf("RegCacheableDB(): table '%s.%s' has no primary key", d.dbConfig.Database, tableName)
 	}
 	sort.Strings(priCols)
@@ -147,7 +147,7 @@ func (d *DB) RegCacheableDB(ormStructPtr Cacheable, cacheExpiration time.Duratio
 			}
 		}
 	}
-	// glog.Debugf("fields:%#v", fieldsIndexMap)
+	// xlog.Debugf("fields:%#v", fieldsIndexMap)
 
 	var priFieldsIndex = make([]int, len(priCols))
 	for i, col := range priCols {
@@ -379,7 +379,7 @@ func (c *CacheableDB) CacheGet(destStructPtr Cacheable, fields ...string) error 
 		}
 		key, err = c.createPrikey(structElemValue)
 		if err != nil {
-			glog.Errorf("CacheGet(): createPrikey: %s", err.Error())
+			xlog.Errorf("CacheGet(): createPrikey: %s", err.Error())
 			err = nil
 			return
 		}
@@ -391,7 +391,7 @@ func (c *CacheableDB) CacheGet(destStructPtr Cacheable, fields ...string) error 
 			err = c.Cache.Set(cacheKey.Key, key, c.cacheExpiration).Err()
 		}
 		if err != nil {
-			glog.Errorf("CacheGet(): %s", err.Error())
+			xlog.Errorf("CacheGet(): %s", err.Error())
 			err = nil
 		}
 	})
@@ -507,7 +507,7 @@ func (c *CacheableDB) CacheGetByWhere(destStructPtr Cacheable, whereNamedCond st
 		}
 		key, err = c.createPrikey(structElemValue)
 		if err != nil {
-			glog.Errorf("CacheGetByWhere(): createPrikey: %s", err.Error())
+			xlog.Errorf("CacheGetByWhere(): createPrikey: %s", err.Error())
 			err = nil
 			return
 		}
@@ -519,7 +519,7 @@ func (c *CacheableDB) CacheGetByWhere(destStructPtr Cacheable, whereNamedCond st
 			err = c.Cache.Set(cacheKey.Key, key, c.cacheExpiration).Err()
 		}
 		if err != nil {
-			glog.Errorf("CacheGetByWhere(): %s", err.Error())
+			xlog.Errorf("CacheGetByWhere(): %s", err.Error())
 			err = nil
 		}
 	})
@@ -561,7 +561,7 @@ func (c *CacheableDB) getFirstCache(key string, destStructPtr Cacheable) (bool, 
 		if err == nil {
 			return true, nil
 		}
-		glog.Errorf("CacheGet(): %s", err.Error())
+		xlog.Errorf("CacheGet(): %s", err.Error())
 
 	} else if !redis.IsRedisNil(err) {
 		return false, err

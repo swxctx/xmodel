@@ -8,11 +8,11 @@ import (
 	"unsafe"
 
 	"github.com/henrylee2cn/goutil/coarsetime"
-	"github.com/xiaoenai/glog"
-	"github.com/xiaoenai/xmodel/mysql"
-	"github.com/xiaoenai/xmodel/sqlx"
+	"github.com/swxctx/xlog"
+	"github.com/swxctx/xmodel/mysql"
+	"github.com/swxctx/xmodel/sqlx"
 
-	"github.com/xiaoenai/xmodel/example/args"
+	"github.com/swxctx/xmodel/example/args"
 )
 
 // User user info
@@ -38,7 +38,7 @@ func ToArgsUserSlice(a []*User) []*args.User {
 	return *(*[]*args.User)(unsafe.Pointer(&a))
 }
 
-// TableName implements 'github.com/xiaoenai/xmodel'.Cacheable
+// TableName implements 'github.com/swxctx/xmodel'.Cacheable
 func (*User) TableName() string {
 	return "user"
 }
@@ -142,7 +142,7 @@ func UpsertUser(_u *User, _updateFields []string, tx ...*sqlx.Tx) (int64, error)
 	}
 	err = userDB.DeleteCache(_u)
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return _u.Id, nil
 }
@@ -181,7 +181,7 @@ func UpdateUserByPrimary(_u *User, _updateFields []string, tx ...*sqlx.Tx) error
 	}
 	err = userDB.DeleteCache(_u)
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -219,7 +219,7 @@ func UpdateUserByName(_u *User, _updateFields []string, tx ...*sqlx.Tx) error {
 	}
 	err = userDB.DeleteCache(_u, "name")
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -253,7 +253,7 @@ func DeleteUserByPrimary(_id int64, deleteHard bool, tx ...*sqlx.Tx) error {
 		Id: _id,
 	})
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -286,7 +286,7 @@ func DeleteUserByName(_name string, deleteHard bool, tx ...*sqlx.Tx) error {
 		Name: _name,
 	}, "name")
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }

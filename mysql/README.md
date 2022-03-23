@@ -10,8 +10,8 @@ import (
     "testing"
     "time"
 
-	"github.com/xiaoenai/xmodel/mysql"
-    "github.com/xiaoenai/xmodel/redis"
+	"github.com/swxctx/xmodel/mysql"
+    "github.com/swxctx/xmodel/redis"
 )
 
 type testTable struct {

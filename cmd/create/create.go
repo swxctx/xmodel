@@ -5,11 +5,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/xiaoenai/glog"
+	"github.com/swxctx/xlog"
 
 	"github.com/henrylee2cn/goutil"
-	"github.com/xiaoenai/xmodel/cmd/create/tpl"
-	"github.com/xiaoenai/xmodel/cmd/info"
+	"github.com/swxctx/xmodel/cmd/create/tpl"
+	"github.com/swxctx/xmodel/cmd/info"
 )
 
 // ModelTpl template file name
@@ -20,12 +20,12 @@ const ModelGenLock = "__model__gen__.lock"
 
 // CreateProject creates a project.
 func CreateProject(force bool) {
-	glog.Infof("Generating project: %s", info.ProjPath())
+	xlog.Infof("Generating project: %s", info.ProjPath())
 
 	os.MkdirAll(info.AbsPath(), os.FileMode(0755))
 	err := os.Chdir(info.AbsPath())
 	if err != nil {
-		glog.Fatalf("[XModel] Jump working directory failed: %v", err)
+		xlog.Fatalf("[XModel] Jump working directory failed: %v", err)
 	}
 
 	force = force || !goutil.FileExists(ModelGenLock)
@@ -48,12 +48,12 @@ func CreateProject(force bool) {
 	// write template file
 	f, err := os.OpenFile(ModelTpl, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		glog.Fatalf("[XModel] Create files error: %v", err)
+		xlog.Fatalf("[XModel] Create files error: %v", err)
 	}
 	defer f.Close()
 	f.Write(formatSource(b))
 
 	tpl.RestoreAsset("./", ModelGenLock)
 
-	glog.Infof("Completed code generation!")
+	xlog.Infof("Completed code generation!")
 }

@@ -1,4 +1,4 @@
-module github.com/xiaoenai/xmodel
+module github.com/swxctx/xmodel
 
 go 1.13
 
@@ -15,9 +15,11 @@ require (
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/henrylee2cn/cfgo v0.0.0-20180417024816-e6c3cc325b21
 	github.com/henrylee2cn/goutil v0.0.0-20191029125303-21920e347847
-	github.com/xiaoenai/glog v0.0.0-20200611142840-66249c007189
+	github.com/swxctx/xlog v0.0.0-20200617113404-90cdad0cb8aa
+	github.com/urfave/cli v1.22.5
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.uber.org/zap v1.15.0 // indirect
+	golang.org/x/crypto v0.0.0-20190510104115-cbcb75029529
 	google.golang.org/genproto v0.0.0-20200611194920-44ba362f84c1 // indirect
 	google.golang.org/grpc v1.29.1 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22

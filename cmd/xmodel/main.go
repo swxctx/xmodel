@@ -4,15 +4,15 @@ import (
 	"os"
 
 	"github.com/urfave/cli"
-	"github.com/xiaoenai/xmodel/cmd/create"
-	"github.com/xiaoenai/xmodel/cmd/info"
+	"github.com/swxctx/xmodel/cmd/create"
+	"github.com/swxctx/xmodel/cmd/info"
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "XModel"
+	app.Name = "xmodel"
 	app.Version = "v1.0.0"
-	app.Author = "xiaoenai"
+	app.Author = "swxctx"
 	app.Usage = "a deployment tools of xmodel frameware"
 
 	// new a project

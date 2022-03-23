@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/xiaoenai/xmodel/cmd/info"
+	"github.com/swxctx/xmodel/cmd/info"
 )
 
 func TestGenerator(t *testing.T) {

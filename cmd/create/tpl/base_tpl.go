@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/xiaoenai/xmodel/cmd/info"
+	"github.com/swxctx/xmodel/cmd/info"
 )
 
 // RestoreAsset restores an asset under the given directory

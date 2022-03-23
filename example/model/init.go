@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/xiaoenai/xmodel/mongo"
-	"github.com/xiaoenai/xmodel/mysql"
-	"github.com/xiaoenai/xmodel/redis"
+	"github.com/swxctx/xmodel/mongo"
+	"github.com/swxctx/xmodel/mysql"
+	"github.com/swxctx/xmodel/redis"
 )
 
 // mysqlHandler preset mysql DB handler

@@ -12,7 +12,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/xiaoenai/redis"
+	"github.com/swxctx/redis"
 )
 
 func main() {

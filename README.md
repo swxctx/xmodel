@@ -4,8 +4,8 @@ Golang model工具集/脚手架(MySql/Redis/Etcd/MongoDB)
 ## Install
 
 ```
-go get -u -f -d github.com/xiaoenai/xmodel/...
-cd $GOPATH/src/github.com/xiaoenai/xmodel/cmd/xmodel
+go get -u -f -d github.com/swxctx/xmodel/...
+cd $GOPATH/src/github.com/swxctx/xmodel/cmd/xmodel
 go install
 ```
 
@@ -22,7 +22,7 @@ VERSION:
    v1.0.0
 
 AUTHOR:
-   xiaoenai
+   swxctx
 
 COMMANDS:
    gen      Generate a xmodel code
@@ -69,7 +69,7 @@ xmodel tpl -host 127.0.0.1 -port 3306 -username qas -password 123456 -db test -t
 
 ```
 // Command xmodel is the xmodel tools.
-// The framework reference: https://github.com/xiaoenai/xmodel
+// The framework reference: https://github.com/swxctx/xmodel
 package __TPL__
 
 // __MYSQL_MODEL__ create mysql model
@@ -115,12 +115,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/xiaoenai/glog"
-	"github.com/xiaoenai/xmodel/example/model"
-	"github.com/xiaoenai/xmodel/mongo"
-	"github.com/xiaoenai/xmodel/mysql"
-	"github.com/xiaoenai/xmodel/redis"
-	"github.com/xiaoenai/xmodel/sqlx"
+	"github.com/swxctx/xlog"
+	"github.com/swxctx/xmodel/example/model"
+	"github.com/swxctx/xmodel/mongo"
+	"github.com/swxctx/xmodel/mysql"
+	"github.com/swxctx/xmodel/redis"
+	"github.com/swxctx/xmodel/sqlx"
 )
 
 func TestXmodel(t *testing.T) {
@@ -159,7 +159,7 @@ func TestXmodel(t *testing.T) {
 	if _, err := model.InsertUser(&model.User{
 		Name: "xmodel",
 	}); err != nil {
-		glog.Errorf("TestXmodel: insert uer err-> %v", err)
+		xlog.Errorf("TestXmodel: insert uer err-> %v", err)
 		return
 	}
 
@@ -169,24 +169,24 @@ func TestXmodel(t *testing.T) {
 		if _, err := model.InsertUser(&model.User{
 			Name: "xmodel",
 		}); err != nil {
-			glog.Errorf("TestXmodel: insert uer err-> %v", err)
+			xlog.Errorf("TestXmodel: insert uer err-> %v", err)
 			return err
 		}
 		return nil
 	}); err != nil {
-		glog.Errorf("TestXmodel: insert user transaction err-> %v", err)
+		xlog.Errorf("TestXmodel: insert user transaction err-> %v", err)
 	}
 
 	// select
 	user, exists, err := model.GetUserByPrimary(1)
 	if err != nil {
-		glog.Errorf("TestXmodel: GetUserByPrimary err-> %v", err)
+		xlog.Errorf("TestXmodel: GetUserByPrimary err-> %v", err)
 		return
 	}
 	if !exists {
-		glog.Errorf("TestXmodel: user not exists")
+		xlog.Errorf("TestXmodel: user not exists")
 		return
 	}
-	glog.Infof("TestXmodel: user.name-> %s", user.Name)
+	xlog.Infof("TestXmodel: user.name-> %s", user.Name)
 }
 ```

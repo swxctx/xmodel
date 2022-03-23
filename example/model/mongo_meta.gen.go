@@ -8,9 +8,9 @@ import (
 	"unsafe"
 
 	"github.com/henrylee2cn/goutil/coarsetime"
-	"github.com/xiaoenai/xmodel/mongo"
+	"github.com/swxctx/xmodel/mongo"
 
-	"github.com/xiaoenai/xmodel/example/args"
+	"github.com/swxctx/xmodel/example/args"
 )
 
 // Meta comment...
@@ -26,7 +26,7 @@ func ToArgsMeta(_m *Meta) *args.Meta {
 	return (*args.Meta)(unsafe.Pointer(_m))
 }
 
-// TableName implements 'github.com/xiaoenai/xmodel'.Cacheable
+// TableName implements 'github.com/swxctx/xmodel'.Cacheable
 func (*Meta) TableName() string {
 	return "meta"
 }

@@ -8,11 +8,11 @@ import (
 	"unsafe"
 
 	"github.com/henrylee2cn/goutil/coarsetime"
-	"github.com/xiaoenai/glog"
-	"github.com/xiaoenai/xmodel/mysql"
-	"github.com/xiaoenai/xmodel/sqlx"
+	"github.com/swxctx/xlog"
+	"github.com/swxctx/xmodel/mysql"
+	"github.com/swxctx/xmodel/sqlx"
 
-	"github.com/xiaoenai/xmodel/example/args"
+	"github.com/swxctx/xmodel/example/args"
 )
 
 // Log comment...
@@ -38,7 +38,7 @@ func ToArgsLogSlice(a []*Log) []*args.Log {
 	return *(*[]*args.Log)(unsafe.Pointer(&a))
 }
 
-// TableName implements 'github.com/xiaoenai/xmodel'.Cacheable
+// TableName implements 'github.com/swxctx/xmodel'.Cacheable
 func (*Log) TableName() string {
 	return "log"
 }
@@ -142,7 +142,7 @@ func UpsertLog(_l *Log, _updateFields []string, tx ...*sqlx.Tx) (int64, error) {
 	}
 	err = logDB.DeleteCache(_l)
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return _l.Id, nil
 }
@@ -181,7 +181,7 @@ func UpdateLogByPrimary(_l *Log, _updateFields []string, tx ...*sqlx.Tx) error {
 	}
 	err = logDB.DeleteCache(_l)
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }
@@ -215,7 +215,7 @@ func DeleteLogByPrimary(_id int64, deleteHard bool, tx ...*sqlx.Tx) error {
 		Id: _id,
 	})
 	if err != nil {
-		glog.Errorf("%s", err.Error())
+		xlog.Errorf("%s", err.Error())
 	}
 	return nil
 }

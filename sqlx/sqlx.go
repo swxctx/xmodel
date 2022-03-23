@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/xiaoenai/xmodel/sqlx/reflectx"
+	"github.com/swxctx/xmodel/sqlx/reflectx"
 )
 
 // Although the NameMapper is convenient, in practice it should not

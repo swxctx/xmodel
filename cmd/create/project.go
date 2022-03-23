@@ -9,10 +9,10 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/xiaoenai/glog"
+	"github.com/swxctx/xlog"
 
 	"github.com/henrylee2cn/goutil"
-	"github.com/xiaoenai/xmodel/cmd/info"
+	"github.com/swxctx/xmodel/cmd/info"
 )
 
 type (
@@ -75,7 +75,7 @@ func (p *Project) fillFile(k string) {
 func mustMkdirAll(dir string) {
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
-		glog.Fatalf("[XModel] %v", err)
+		xlog.Fatalf("[XModel] %v", err)
 	}
 }
 
@@ -101,7 +101,7 @@ func (p *Project) Generator(force bool) {
 		realName := info.ProjPath() + "/" + k
 		f, err := os.OpenFile(k, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.ModePerm)
 		if err != nil {
-			glog.Fatalf("[XModel] create %s error: %v", realName, err)
+			xlog.Fatalf("[XModel] create %s error: %v", realName, err)
 		}
 		b := formatSource(goutil.StringToBytes(v))
 		f.Write(b)
@@ -121,7 +121,7 @@ func (p *Project) gen() {
 func (p *Project) genAndWriteGoModFile() {
 	f, err := os.OpenFile("./go.mod", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		glog.Fatalf("[XModel] create go.mod error: %v", err)
+		xlog.Fatalf("[XModel] create go.mod error: %v", err)
 	}
 	f.WriteString(p.genGoMod())
 	f.Close()
@@ -281,12 +281,12 @@ func (mod *Model) mongoString() string {
 
 	m, err := template.New("").Parse(mongoModelTpl)
 	if err != nil {
-		glog.Fatalf("[XModel] model string: %v", err)
+		xlog.Fatalf("[XModel] model string: %v", err)
 	}
 	buf := bytes.NewBuffer(nil)
 	err = m.Execute(buf, mod)
 	if err != nil {
-		glog.Fatalf("[XModel] model string: %v", err)
+		xlog.Fatalf("[XModel] model string: %v", err)
 	}
 	s := strings.Replace(buf.String(), "&lt;", "<", -1)
 	return strings.Replace(s, "&gt;", ">", -1)
@@ -329,12 +329,12 @@ func (mod *Model) mysqlString() string {
 
 	m, err := template.New("").Parse(mysqlModelTpl)
 	if err != nil {
-		glog.Fatalf("[XModel] model string: %v", err)
+		xlog.Fatalf("[XModel] model string: %v", err)
 	}
 	buf := bytes.NewBuffer(nil)
 	err = m.Execute(buf, mod)
 	if err != nil {
-		glog.Fatalf("[XModel] model string: %v", err)
+		xlog.Fatalf("[XModel] model string: %v", err)
 	}
 	s := strings.Replace(buf.String(), "&lt;", "<", -1)
 	return strings.Replace(s, "&gt;", ">", -1)
@@ -353,7 +353,7 @@ func (p *Project) replaceWithLine(key, placeholder, value string) string {
 func formatSource(src []byte) []byte {
 	b, err := format.Source(src)
 	if err != nil {
-		glog.Fatalf("[XModel] format error: %v\ncode:\n%s", err, src)
+		xlog.Fatalf("[XModel] format error: %v\ncode:\n%s", err, src)
 	}
 	return b
 }

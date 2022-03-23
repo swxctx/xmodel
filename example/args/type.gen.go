@@ -4,7 +4,7 @@
 package args
 
 import (
-	"github.com/xiaoenai/xmodel/mongo"
+	"github.com/swxctx/xmodel/mongo"
 )
 
 // User user info
