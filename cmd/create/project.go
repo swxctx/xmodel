@@ -9,9 +9,8 @@ import (
 	"strings"
 	"unsafe"
 
+	"github.com/swxctx/gutil"
 	"github.com/swxctx/xlog"
-
-	"github.com/henrylee2cn/goutil"
 	"github.com/swxctx/xmodel/cmd/info"
 )
 
@@ -103,7 +102,7 @@ func (p *Project) Generator(force bool) {
 		if err != nil {
 			xlog.Fatalf("[XModel] create %s error: %v", realName, err)
 		}
-		b := formatSource(goutil.StringToBytes(v))
+		b := formatSource(gutil.StringToBytes(v))
 		f.Write(b)
 		f.Close()
 		fmt.Printf("generate %s\n", realName)
@@ -140,7 +139,7 @@ func (p *Project) fieldsJson(fs []*field) string {
 		}
 		fieldName := f.ModelName
 		if len(fieldName) == 0 {
-			fieldName = goutil.SnakeString(f.Name)
+			fieldName = gutil.SnakeString(f.Name)
 		}
 		t := strings.Replace(f.Typ, "*", "", -1)
 		var isSlice bool
@@ -196,7 +195,7 @@ func (p *Project) genConstFile() {
 		text += fmt.Sprintf(
 			"// %s the statement to create '%s' mysql table\n"+
 				"const %s string = ``\n",
-			name, goutil.SnakeString(s.name),
+			name, gutil.SnakeString(s.name),
 			name,
 		)
 	}
@@ -210,12 +209,12 @@ func (p *Project) genTypeFile() {
 
 func (p *Project) genModelFile() {
 	for _, m := range p.tplInfo.models.mysql {
-		fileName := "model/mysql_" + goutil.SnakeString(m.name) + ".gen.go"
+		fileName := "model/mysql_" + gutil.SnakeString(m.name) + ".gen.go"
 		p.codeFiles[fileName] = newModelString(m)
 		p.fillFile(fileName)
 	}
 	for _, m := range p.tplInfo.models.mongo {
-		fileName := "model/mongo_" + goutil.SnakeString(m.name) + ".gen.go"
+		fileName := "model/mongo_" + gutil.SnakeString(m.name) + ".gen.go"
 		p.codeFiles[fileName] = newModelString(m)
 		p.fillFile(fileName)
 	}
@@ -231,7 +230,7 @@ func newModelString(s *structType) string {
 		Doc:              s.doc,
 		Name:             s.name,
 		ModelStyle:       s.modelStyle,
-		SnakeName:        goutil.SnakeString(s.name),
+		SnakeName:        gutil.SnakeString(s.name),
 	}
 	model.LowerFirstLetter = strings.ToLower(model.Name[:1])
 	model.LowerFirstName = model.LowerFirstLetter + model.Name[1:]

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/henrylee2cn/goutil"
+	"github.com/swxctx/gutil"
 	"github.com/swxctx/xmodel/redis"
 	"github.com/swxctx/xmodel/sqlx"
 	"github.com/swxctx/xmodel/sqlx/reflectx"
@@ -48,8 +48,7 @@ func (p *PreDB) Init2(dbConfig *Config, redisClient *redis.Client) (err error) {
 	p.DB.SetMaxOpenConns(dbConfig.MaxOpenConns)
 	p.DB.SetMaxIdleConns(dbConfig.MaxIdleConns)
 	p.DB.SetConnMaxLifetime(time.Duration(dbConfig.ConnMaxLifetime) * time.Second)
-	// p.DB.MapperFunc(goutil.SnakeString)
-	p.DB.Mapper = reflectx.NewMapperFunc("json", goutil.SnakeString)
+	p.DB.Mapper = reflectx.NewMapperFunc("json", gutil.SnakeString)
 	p.DB.dbConfig = dbConfig
 	if !dbConfig.NoCache && redisClient != nil {
 		p.DB.Cache = redisClient

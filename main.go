@@ -3,15 +3,15 @@ package main
 import (
 	"os"
 
-	"github.com/urfave/cli"
 	"github.com/swxctx/xmodel/cmd/create"
 	"github.com/swxctx/xmodel/cmd/info"
+	"github.com/urfave/cli"
 )
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "xmodel"
-	app.Version = "v1.0.0"
+	app.Version = "v1.1.0"
 	app.Author = "swxctx"
 	app.Usage = "a deployment tools of xmodel frameware"
 

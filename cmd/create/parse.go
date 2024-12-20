@@ -11,9 +11,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/swxctx/gutil"
 	"github.com/swxctx/xlog"
-
-	"github.com/henrylee2cn/goutil"
 	"github.com/swxctx/xmodel/cmd/create/structtag"
 )
 
@@ -169,7 +168,7 @@ func (t *tplInfo) collectStructs() {
 				switch structName {
 				case MYSQL_MODEL, MONGO_MODEL:
 				default:
-					if goutil.IsExportedName(structName) {
+					if gutil.IsExportedName(structName) {
 						a := &aliasType{
 							doc:  addSlash(doc),
 							name: structName,
@@ -311,7 +310,7 @@ func (s *structType) initModel() {
 		var hasObjectId bool
 		s.rangeTags(func(tags *structtag.Tags, f *field, anonymous bool) bool {
 			if f.Typ != "mongo.ObjectId" {
-				f.ModelName = goutil.SnakeString(f.Name)
+				f.ModelName = gutil.SnakeString(f.Name)
 				tags.Set(&structtag.Tag{
 					Key:  "bson",
 					Name: f.ModelName,
@@ -388,7 +387,7 @@ func (s *structType) isInvildName() bool {
 	case MYSQL_MODEL, MONGO_MODEL:
 		return true
 	default:
-		return goutil.IsExportedName(s.name)
+		return gutil.IsExportedName(s.name)
 	}
 }
 
@@ -400,7 +399,7 @@ func (s structType) init(t *tplInfo) *structType {
 		f := new(field)
 		if len(v.Names) > 0 {
 			f.Name = v.Names[0].Name
-			if !goutil.IsExportedName(f.Name) {
+			if !gutil.IsExportedName(f.Name) {
 				xlog.Fatalf("[XModel] Unexported field name: %s.%s", s.name, f.Name)
 			}
 		}
@@ -408,7 +407,7 @@ func (s structType) init(t *tplInfo) *structType {
 		if len(f.Name) == 0 {
 			f.anonymous = true
 			f.Name = strings.TrimPrefix(f.Typ, "*")
-			if !goutil.IsExportedName(f.Name) {
+			if !gutil.IsExportedName(f.Name) {
 				xlog.Fatalf("[XModel] Unexported anonymous field: %s.%s", s.name, f.Typ)
 			}
 		}
@@ -418,7 +417,7 @@ func (s structType) init(t *tplInfo) *structType {
 			f.tag = v.Tag.Value
 			f.queryName, f.isQuery = getQueryField(f.tag)
 			if len(f.queryName) == 0 {
-				f.queryName = goutil.SnakeString(f.Name)
+				f.queryName = gutil.SnakeString(f.Name)
 			}
 		}
 		s.fields = append(s.fields, f)
@@ -471,7 +470,7 @@ var addJsonTag = func(tags *structtag.Tags, f *field, anonymous bool) bool {
 	}
 	tags.Set(&structtag.Tag{
 		Key:  "json",
-		Name: goutil.SnakeString(f.Name),
+		Name: gutil.SnakeString(f.Name),
 	})
 	return true
 }

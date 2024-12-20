@@ -4,14 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/henrylee2cn/goutil"
-	"github.com/henrylee2cn/goutil/errors"
+	"github.com/swxctx/gutil"
 	"github.com/swxctx/xlog"
 	"github.com/swxctx/xmodel/redis"
 	"github.com/swxctx/xmodel/sqlx"
@@ -47,8 +47,7 @@ func Connect(dbConfig *Config, redisConfig *redis.Config) (*DB, error) {
 	db.SetMaxOpenConns(dbConfig.MaxOpenConns)
 	db.SetMaxIdleConns(dbConfig.MaxIdleConns)
 	db.SetConnMaxLifetime(time.Duration(dbConfig.ConnMaxLifetime) * time.Second)
-	// db.MapperFunc(goutil.SnakeString)
-	db.Mapper = reflectx.NewMapperFunc("json", goutil.SnakeString)
+	db.Mapper = reflectx.NewMapperFunc("json", gutil.SnakeString)
 
 	return &DB{
 		DB:           db,
@@ -99,10 +98,10 @@ func (d *DB) RegCacheableDB(ormStructPtr Cacheable, cacheExpiration time.Duratio
 	}
 
 	var colsResult []*Col
-	//err := d.DB.Select(&colsResult, `SELECT COLUMN_NAME, COLUMN_KEY FROM information_schema.columns WHERE table_schema = ? AND table_name = ?;`, d.dbConfig.Database, tableName)
-	//if err != nil {
+	// err := d.DB.Select(&colsResult, `SELECT COLUMN_NAME, COLUMN_KEY FROM information_schema.columns WHERE table_schema = ? AND table_name = ?;`, d.dbConfig.Database, tableName)
+	// if err != nil {
 	//	return nil, fmt.Errorf("RegCacheableDB(): %s", err.Error())
-	//}
+	// }
 	v := reflect.ValueOf(ormStructPtr).Elem()
 	for i := 0; i < v.NumField(); i++ {
 		columnName := v.Type().Field(i).Tag.Get("json")
@@ -199,7 +198,7 @@ func (c *CacheableDB) CreateCacheKeyByFields(fields []string, values []interface
 	if err != nil {
 		return "", errors.New("CreateCacheKeyByFields(): " + err.Error())
 	}
-	return c.module.Key(strings.Join(fields, "&") + goutil.BytesToString(bs)), nil
+	return c.module.Key(strings.Join(fields, "&") + gutil.BytesToString(bs)), nil
 }
 
 var emptyValue = reflect.Value{}
@@ -230,11 +229,11 @@ func (c *CacheableDB) CreateCacheKey(structPtr Cacheable, fields ...string) (Cac
 			return emptyCacheKey, emptyValue, errors.New("CreateCacheKey(): " + err.Error())
 		}
 		isPriKey = true
-		cacheKey = c.cachePriKeyPrefix + goutil.BytesToString(bs)
+		cacheKey = c.cachePriKeyPrefix + gutil.BytesToString(bs)
 	} else {
 		for i, field := range fields {
-			fields[i] = goutil.SnakeString(field)
-			vv := v.FieldByName(goutil.CamelString(field))
+			fields[i] = gutil.SnakeString(field)
+			vv := v.FieldByName(gutil.CamelString(field))
 			values = append(values, vv.Interface())
 		}
 		var err error
@@ -264,7 +263,7 @@ func (c *CacheableDB) createPrikey(structElemValue reflect.Value) (string, error
 	if err != nil {
 		return "", errors.New("*CacheableDB.createPrikey(): " + err.Error())
 	}
-	return c.cachePriKeyPrefix + goutil.BytesToString(bs), nil
+	return c.cachePriKeyPrefix + gutil.BytesToString(bs), nil
 }
 
 // CreateGetQuery creates query string of selecting one row data.
@@ -318,7 +317,7 @@ func (c *CacheableDB) CacheGet(destStructPtr Cacheable, fields ...string) error 
 		var b []byte
 		b, err = c.Cache.Get(key).Bytes()
 		if err == nil {
-			key = goutil.BytesToString(b)
+			key = gutil.BytesToString(b)
 			gettedFirstCacheKey = true
 		} else if !redis.IsRedisNil(err) {
 			return err
@@ -363,7 +362,7 @@ func (c *CacheableDB) CacheGet(destStructPtr Cacheable, fields ...string) error 
 			} else {
 				b, err = c.Cache.Get(key).Bytes()
 				if err == nil {
-					key = goutil.BytesToString(b)
+					key = gutil.BytesToString(b)
 					gettedFirstCacheKey = true
 					goto FIRST
 				} else if !redis.IsRedisNil(err) {
@@ -409,7 +408,7 @@ func (c *CacheableDB) createCacheKeyByWhere(structPtr Cacheable, whereNamedCond 
 		return emptyCacheKey, whereCond, errors.New("CreateCacheKeyByFields(): " + err.Error())
 	}
 	return CacheKey{
-		Key:         c.module.Key(whereCond + goutil.BytesToString(bs)),
+		Key:         c.module.Key(whereCond + gutil.BytesToString(bs)),
 		FieldValues: values,
 		isPriKey:    false,
 	}, whereCond, nil
@@ -451,7 +450,7 @@ func (c *CacheableDB) CacheGetByWhere(destStructPtr Cacheable, whereNamedCond st
 	// read secondary cache
 	b, err = c.Cache.Get(key).Bytes()
 	if err == nil {
-		key = goutil.BytesToString(b)
+		key = gutil.BytesToString(b)
 		gettedFirstCacheKey = true
 	} else if !redis.IsRedisNil(err) {
 		return err
@@ -492,7 +491,7 @@ func (c *CacheableDB) CacheGetByWhere(destStructPtr Cacheable, whereNamedCond st
 		} else {
 			b, err = c.Cache.Get(key).Bytes()
 			if err == nil {
-				key = goutil.BytesToString(b)
+				key = gutil.BytesToString(b)
 				gettedFirstCacheKey = true
 				goto FIRST
 			} else if !redis.IsRedisNil(err) {
@@ -536,7 +535,7 @@ func (c *CacheableDB) cleanDestCacheable(destStructElemValue reflect.Value) {
 
 func (c *CacheableDB) checkSecondCache(destStructElemValue reflect.Value, fields []string, values []interface{}) bool {
 	for i, field := range fields {
-		vv := destStructElemValue.FieldByName(goutil.CamelString(field))
+		vv := destStructElemValue.FieldByName(gutil.CamelString(field))
 		if vv.Kind() == reflect.Ptr {
 			vv = vv.Elem()
 			if vv.Kind() == reflect.Invalid {

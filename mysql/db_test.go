@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/henrylee2cn/goutil"
+	"github.com/swxctx/gutil"
 	"github.com/swxctx/xmodel/mysql"
 	"github.com/swxctx/xmodel/redis"
 	"github.com/swxctx/xmodel/sqlx"
@@ -24,7 +24,7 @@ func (t *testTable) TableName() string {
 
 func TestNamed(t *testing.T) {
 	db := new(sqlx.DB)
-	db.Mapper = reflectx.NewMapperFunc("json", goutil.SnakeString)
+	db.Mapper = reflectx.NewMapperFunc("json", gutil.SnakeString)
 	p := &testTable{
 		TestId:      123,
 		TestContent: "ctn",

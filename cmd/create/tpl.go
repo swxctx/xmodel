@@ -145,11 +145,11 @@ ${type_define_list}
 const mysqlModelTpl = `package model
 
 import (
+	"time"
 	"database/sql"
 	"unsafe"
 
 	"github.com/swxctx/xlog"
-	"github.com/henrylee2cn/goutil/coarsetime"
 	"github.com/swxctx/xmodel/mysql"
 	"github.com/swxctx/xmodel/sqlx"
 
@@ -203,7 +203,7 @@ func Get{{.Name}}DB() *mysql.CacheableDB {
 //  Primary key:{{range .PrimaryFields}} '{{.ModelName}}'{{end}};
 //  Without cache layer.
 func Insert{{.Name}}(_{{.LowerFirstLetter}} *{{.Name}}, tx ...*sqlx.Tx) ({{if .IsDefaultPrimary}}int64,{{end}}error) {
-	_{{.LowerFirstLetter}}.UpdatedAt = coarsetime.FloorTimeNow().Unix()
+	_{{.LowerFirstLetter}}.UpdatedAt = time.Now().Unix()
 	if _{{.LowerFirstLetter}}.CreatedAt == 0 {
 		_{{.LowerFirstLetter}}.CreatedAt = _{{.LowerFirstLetter}}.UpdatedAt
 	}
@@ -298,7 +298,7 @@ func Upsert{{.Name}}(_{{.LowerFirstLetter}} *{{.Name}}, _updateFields []string, 
 //  Don't update the primary keys, 'created_at' key and 'deleted_ts' key;
 //  Update all fields except the primary keys, 'created_at' key and 'deleted_ts' key, if _updateFields is empty.
 func Update{{.Name}}ByPrimary(_{{.LowerFirstLetter}} *{{.Name}}, _updateFields []string, tx ...*sqlx.Tx) error {
-	_{{.LowerFirstLetter}}.UpdatedAt = coarsetime.FloorTimeNow().Unix()
+	_{{.LowerFirstLetter}}.UpdatedAt = time.Now().Unix()
 	err := {{.LowerFirstName}}DB.Callback(func(tx sqlx.DbOrTx) error {
 		query := "UPDATE {{.NameSql}} SET "
 		if len(_updateFields) == 0 {
@@ -383,7 +383,7 @@ func Delete{{.Name}}ByPrimary({{range .PrimaryFields}}_{{.ModelName}} {{.Typ}}, 
 
 	}else {
 		// Delay delete from the hard disk.
-		ts := coarsetime.FloorTimeNow().Unix()
+		ts := time.Now().Unix()
 		err = {{.LowerFirstName}}DB.Callback(func(tx sqlx.DbOrTx) error {
 			_, err := tx.Exec("UPDATE {{.NameSql}} SET ` + "`updated_at`=?, `deleted_ts`=?" + ` WHERE {{range .PrimaryFields}}` + "`{{.ModelName}}`=? AND {{end}}`deleted_ts`=0;" + `", ts, ts, {{range .PrimaryFields}}_{{.ModelName}}, {{end}})
 			return err
@@ -526,9 +526,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/henrylee2cn/goutil/coarsetime"
 	"github.com/swxctx/xmodel/mongo"
-
 	"${import_prefix}/args"
 )
 
@@ -595,7 +593,7 @@ func Upsert{{$.Name}}By{{.Name}}({{.ModelName}} {{.Typ}}, updater mongo.M) error
 //  Update data based on _updateFields if no primary key is specified;
 func Upsert{{.Name}}(selector, updater mongo.M) error {
 	selector["deleted_ts"] = 0
-	updater["updated_at"] = coarsetime.FloorTimeNow().Unix()
+	updater["updated_at"] = time.Now().Unix()
 	return {{.LowerFirstName}}DB.WitchCollection(func(col *mongo.Collection) error {
 		_, err := col.Upsert(selector, mongo.M{"$set": updater})
 		return err
@@ -683,7 +681,7 @@ func Delete{{$.Name}}By{{.Name}}({{.ModelName}} {{.Typ}}, deleteHard bool) error
 		err = Delete{{$.Name}}(selector)
 	}else {
 		// Delay delete from the hard disk.
-		updater := mongo.M{"updated_at": coarsetime.FloorTimeNow().Unix(), "deleted_ts": coarsetime.FloorTimeNow().Unix()}
+		updater := mongo.M{"updated_at": time.Now().Unix(), "deleted_ts": time.Now().Unix()}
 		err = Upsert{{$.Name}}(selector, updater)
 	}
 	var _{{$.LowerFirstLetter}} = &{{$.Name}}{
@@ -705,11 +703,14 @@ const __gomod__ = `module ${import_prefix}
 
 go 1.13
 
-replace github.com/coreos/go-systemd => github.com/coreos/go-systemd/v22 v22.0.0
-
 require (
-	github.com/henrylee2cn/cfgo v0.0.0-20180417024816-e6c3cc325b21
-	github.com/henrylee2cn/goutil v0.0.0-20191202093501-834eaf50f6fe
-	github.com/swxctx/xlog v0.0.0-20200611142840-66249c007189
+	github.com/go-redis/redis/v7 v7.4.1
+	github.com/go-sql-driver/mysql v1.8.1
+	github.com/henrylee2cn/cfgo v0.0.0-20220626152948-7980c5d761c8
+	github.com/swxctx/gutil v0.0.0-20241220040728-82b4e476a430
+	github.com/swxctx/xlog v0.0.0-20240415025414-1ab297de72e4
+	github.com/urfave/cli v1.22.16
+	golang.org/x/crypto v0.31.0
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
 `

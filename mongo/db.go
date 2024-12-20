@@ -2,17 +2,15 @@ package mongo
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
 	"time"
 
+	"github.com/swxctx/gutil"
 	"github.com/swxctx/xlog"
-
 	"github.com/swxctx/xmodel/redis"
-
-	"github.com/henrylee2cn/goutil"
-	"github.com/henrylee2cn/goutil/errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -120,7 +118,7 @@ func (c *CacheableDB) CreateCacheKeyByFields(fields []string, values []interface
 	if err != nil {
 		return "", errors.New("CreateCacheKeyByFields(): " + err.Error())
 	}
-	return c.module.Key(strings.Join(fields, "&") + goutil.BytesToString(bs)), nil
+	return c.module.Key(strings.Join(fields, "&") + gutil.BytesToString(bs)), nil
 }
 
 // CreateCacheKey creates cache key and fields' values.
@@ -135,17 +133,15 @@ func (c *CacheableDB) CreateCacheKey(structPtr Cacheable, fields ...string) (Cac
 	var values = make([]interface{}, 0, 2)
 	var cacheKey string
 	if len(fields) == 0 {
-		// TODO 这里必须要传fields
 		return emptyCacheKey, errors.New("CreateCacheKey(): must transfer fields")
 	} else {
 		for i, field := range fields {
-			vv := v.FieldByName(goutil.CamelString(field))
+			vv := v.FieldByName(gutil.CamelString(field))
 			if vv.Kind() == reflect.Ptr {
 				vv = vv.Elem()
 			}
 			values = append(values, vv.Interface())
-			// values = append(values, v.FieldByName(goutil.CamelString(field)).Interface())
-			fields[i] = goutil.SnakeString(field)
+			fields[i] = gutil.SnakeString(field)
 		}
 		var err error
 		cacheKey, err = c.CreateCacheKeyByFields(fields, values)
@@ -188,7 +184,7 @@ func (c *CacheableDB) CacheGet(destStructPtr Cacheable, fields ...string) error 
 		var b []byte
 		b, err = c.Cache.Get(key).Bytes()
 		if err == nil {
-			key = goutil.BytesToString(b)
+			key = gutil.BytesToString(b)
 			gettedFirstCacheKey = true
 		} else if !redis.IsRedisNil(err) {
 			return err
@@ -230,7 +226,7 @@ func (c *CacheableDB) CacheGet(destStructPtr Cacheable, fields ...string) error 
 			} else {
 				b, err = c.Cache.Get(key).Bytes()
 				if err == nil {
-					key = goutil.BytesToString(b)
+					key = gutil.BytesToString(b)
 					gettedFirstCacheKey = true
 					goto FIRST
 				} else if !redis.IsRedisNil(err) {
@@ -271,7 +267,7 @@ func (c *CacheableDB) CacheGet(destStructPtr Cacheable, fields ...string) error 
 func (c *CacheableDB) checkSecondCache(destStructPtr Cacheable, fields []string, values []interface{}) bool {
 	v := reflect.ValueOf(destStructPtr).Elem()
 	for i, field := range fields {
-		vv := v.FieldByName(goutil.CamelString(field))
+		vv := v.FieldByName(gutil.CamelString(field))
 		if vv.Kind() == reflect.Ptr {
 			vv = vv.Elem()
 		}
@@ -368,7 +364,7 @@ func (c *CacheableDB) createPrikey(structPtr Cacheable) (string, error) {
 	if err != nil {
 		return "", errors.New("*CacheableDB.createPrikey(): " + err.Error())
 	}
-	return c.cachePriKeyPrefix + goutil.BytesToString(bs), nil
+	return c.cachePriKeyPrefix + gutil.BytesToString(bs), nil
 }
 
 func (c *CacheableDB) CreateGetQuery(values []interface{}, whereFields ...string) M {

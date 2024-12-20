@@ -5,9 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/swxctx/gutil"
 	"github.com/swxctx/xlog"
-
-	"github.com/henrylee2cn/goutil"
 	"github.com/swxctx/xmodel/cmd/create/tpl"
 	"github.com/swxctx/xmodel/cmd/info"
 )
@@ -28,7 +27,7 @@ func CreateProject(force bool) {
 		xlog.Fatalf("[XModel] Jump working directory failed: %v", err)
 	}
 
-	force = force || !goutil.FileExists(ModelGenLock)
+	force = force || !gutil.FileIsExist(ModelGenLock)
 
 	// creates base files
 	if force {

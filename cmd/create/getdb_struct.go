@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"github.com/swxctx/gutil"
 	"io/ioutil"
 	"net"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"github.com/swxctx/xlog"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/henrylee2cn/goutil"
 	"github.com/swxctx/xmodel/cmd/info"
 	"golang.org/x/crypto/ssh"
 )
@@ -160,7 +160,7 @@ func parseTable(db *sql.DB, tableName string) (tb *structType, hasTimeImport boo
 	defer row.Close()
 	tb = new(structType)
 	tb.modelStyle = "mysql"
-	tb.name = goutil.CamelString(tableName)
+	tb.name = gutil.CamelString(tableName)
 	var updatedAt, createdAt, deletedTs bool
 	for row.Next() {
 		var (
@@ -194,7 +194,7 @@ func parseTable(db *sql.DB, tableName string) (tb *structType, hasTimeImport boo
 		default:
 			f.tag = fmt.Sprintf("`json:\"%s\"`", f.ModelName)
 		}
-		f.Name = goutil.CamelString(f.ModelName)
+		f.Name = gutil.CamelString(f.ModelName)
 		tb.fields = append(tb.fields, f)
 
 		updatedAt = updatedAt || isDefaultField(f, "UpdatedAt", "int64")
@@ -204,7 +204,7 @@ func parseTable(db *sql.DB, tableName string) (tb *structType, hasTimeImport boo
 	if !(updatedAt && createdAt && deletedTs) {
 		xlog.Warnf("Generated struct fields is not in conformity with the table fields: %s", tableName)
 	}
-	newTabName := goutil.SnakeString(tb.name)
+	newTabName := gutil.SnakeString(tb.name)
 	if newTabName != tableName {
 		xlog.Warnf("Generated table name is not in conformity with the table name: new: %s, raw: %s", newTabName, tableName)
 	}
