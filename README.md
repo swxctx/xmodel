@@ -4,9 +4,7 @@ Golang model工具集/脚手架(MySql/Redis/MongoDB)
 ## Install
 
 ```
-go get -u -f -d github.com/swxctx/xmodel/...
-cd $GOPATH/src/github.com/swxctx/xmodel/cmd/xmodel
-go install
+go install github.com/swxctx/xmodel@latest
 ```
 
 ## Command
