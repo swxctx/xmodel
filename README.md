@@ -4,7 +4,7 @@ Golang model工具集/脚手架(MySql/Redis/MongoDB)
 ## Install
 
 ```
-go install github.com/swxctx/xmodel@v2
+go install github.com/swxctx/xmodel@latest
 ```
 
 ## Command
