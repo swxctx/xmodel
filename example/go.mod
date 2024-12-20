@@ -1,6 +1,6 @@
 module github.com/swxctx/xmodel/example
 
-go 1.23.0
+go 1.23
 
 require (
 	github.com/swxctx/xlog v0.0.0-20240415025414-1ab297de72e4
