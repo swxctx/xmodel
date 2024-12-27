@@ -24,14 +24,10 @@ func main() {
 				Name:  "app_path, p",
 				Usage: "The path(relative/absolute) of the project",
 			},
-			cli.BoolFlag{
-				Name:  "force, f",
-				Usage: "Forced to rebuild the whole project",
-			},
 		},
 		Before: initProject,
 		Action: func(c *cli.Context) error {
-			create.CreateProject(c.Bool("force"))
+			create.CreateProject()
 			return nil
 		},
 	}
