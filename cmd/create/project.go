@@ -81,20 +81,20 @@ func mustMkdirAll(dir string) {
 func hasGenSuffix(name string) bool {
 	switch name {
 	case "model/init.go":
-		return false
+		return true
 	default:
 		return true
 	}
 }
 
-func (p *Project) Generator(force bool) {
+func (p *Project) Generator() {
 	p.gen()
 	// make all directorys
 	mustMkdirAll("args")
 	mustMkdirAll("model")
 	// write files
 	for k, v := range p.codeFiles {
-		if !force && !hasGenSuffix(k) {
+		if !hasGenSuffix(k) {
 			continue
 		}
 		realName := info.ProjPath() + "/" + k
@@ -114,17 +114,6 @@ func (p *Project) gen() {
 	p.genConstFile()
 	p.genTypeFile()
 	p.genModelFile()
-	p.genAndWriteGoModFile()
-}
-
-func (p *Project) genAndWriteGoModFile() {
-	f, err := os.OpenFile("./go.mod", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.ModePerm)
-	if err != nil {
-		xlog.Fatalf("[XModel] create go.mod error: %v", err)
-	}
-	f.WriteString(p.genGoMod())
-	f.Close()
-	fmt.Printf("generate %s\n", info.ProjPath()+"/go.mod")
 }
 
 func (p *Project) fieldsJson(fs []*field) string {
@@ -355,9 +344,4 @@ func formatSource(src []byte) []byte {
 		xlog.Fatalf("[XModel] format error: %v\ncode:\n%s", err, src)
 	}
 	return b
-}
-
-func (p *Project) genGoMod() string {
-	r := strings.Replace(__gomod__, "${import_prefix}", p.ImprotPrefix, -1)
-	return r
 }

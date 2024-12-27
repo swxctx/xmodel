@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v7"
-	"github.com/henrylee2cn/cfgo"
 )
 
 type (
@@ -94,40 +93,11 @@ const (
 	TypeCluster = "cluster"
 )
 
-// Reload reloads config.
-func (cfg *Config) Reload(bind cfgo.BindFunc) error {
-	if cfg.init {
-		return nil
-	}
-	err := bind()
-	if err != nil {
-		return err
-	}
-	cfg.init = true
-	if cfg.DeployType != TypeSingle && cfg.DeployType != TypeCluster {
-		return fmt.Errorf("redis config: deploy_type optional enumeration list: %s, %s", TypeSingle, TypeCluster)
-	}
-	return nil
-}
-
-// ReadConfig read config from specified yaml section.
-func ReadConfig(configSection string) (*Config, error) {
-	var cfg = NewConfig()
-	var err error
-	if cfgo.IsReg(configSection) {
-		err = cfgo.BindSection(configSection, cfg)
-	} else {
-		err = cfgo.Reg(configSection, cfg)
-	}
-	return cfg, err
-}
-
 // NewConfig creates a default config.
 func NewConfig() *Config {
 	return &Config{
 		DeployType: TypeSingle,
 		ForSingle:  SingleConfig{Addr: "127.0.0.1:6379"},
-		// ForCluster: ClusterConfig{Addrs: []string{"127.0.0.1:6379"}},
 	}
 }
 

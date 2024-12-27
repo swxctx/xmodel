@@ -42,15 +42,9 @@ func TestNamed(t *testing.T) {
 }
 
 func TestCacheDb(t *testing.T) {
-	dbConf, err := mysql.ReadConfig("test_db")
-	if err != nil {
-		t.Fatal(err)
-	}
+	dbConf := mysql.NewConfig()
 	dbConf.Database = "test"
-	redisConf, err := redis.ReadConfig("test_redis")
-	if err != nil {
-		t.Fatal(err)
-	}
+	redisConf := redis.NewConfig()
 	db, err := mysql.Connect(dbConf, redisConf)
 	if err != nil {
 		t.Fatal(err)

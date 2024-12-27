@@ -3,44 +3,23 @@ package mongo
 import (
 	"time"
 
-	"github.com/henrylee2cn/cfgo"
 	"gopkg.in/mgo.v2"
 )
 
 // Config mongodb setting
 type Config struct {
-	Addrs    []string      `yaml:"addrs"`
-	Timeout  time.Duration `yaml:"timeout"`
-	Database string        `yaml:"database"`
+	Addrs    []string      `yaml:"addrs" json:"addrs"`
+	Timeout  time.Duration `yaml:"timeout" json:"timeout"`
+	Database string        `yaml:"database" json:"database"`
 	// Username and Password inform the credentials for the initial authentication
 	// done on the database defined by the Source field. See Session.Login.
-	Username string `yaml:"username"`
-	Password string `yaml:"passward"`
+	Username string `yaml:"username" json:"username"`
+	Password string `yaml:"passward" json:"password"`
 	// PoolLimit defines the per-server socket pool limit. Defaults to 4096.
 	// See Session.SetPoolLimit for details.
-	PoolLimit int `yaml:"pool_limit"`
+	PoolLimit int `yaml:"pool_limit" json:"pool_limit"`
 	// NoCache whether to disable cache
-	NoCache bool `yaml:"no_cache"`
-
-	init bool
-}
-
-var configs = make(map[string]*Config)
-
-// ReadConfig gets a mongodb db config form yaml.
-func ReadConfig(configSection string) (*Config, error) {
-	conf, ok := configs[configSection]
-	if ok {
-		return conf, nil
-	}
-	conf = NewConfig()
-	err := cfgo.Reg(configSection, conf)
-	if err == nil {
-		configs[configSection] = conf
-		return conf, nil
-	} else {
-		return nil, err
-	}
+	NoCache bool `yaml:"no_cache" json:"no_cache"`
 }
 
 // NewConfig creates a default config.
@@ -53,28 +32,6 @@ func NewConfig() *Config {
 		Password:  "",
 		Database:  "test",
 	}
-}
-
-// Reload sync automatically config from config file.
-func (cfg *Config) Reload(bind cfgo.BindFunc) error {
-	if cfg.init {
-		return nil
-	}
-	err := bind()
-	if err != nil {
-		return err
-	}
-	if len(cfg.Addrs) == 0 {
-		cfg.Addrs = []string{"127.0.0.1:27017"}
-	}
-	if len(cfg.Username) == 0 {
-		cfg.Username = "root"
-	}
-	if len(cfg.Database) == 0 {
-		cfg.Database = "test"
-	}
-	cfg.init = true
-	return nil
 }
 
 // Set config

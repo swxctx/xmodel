@@ -697,13 +697,3 @@ func Delete{{$.Name}}By{{.Name}}({{.ModelName}} {{.Typ}}, deleteHard bool) error
 	return err
 }
 {{end}}`
-
-const __gomod__ = `module ${import_prefix}
-
-go 1.23
-
-require (
-	github.com/swxctx/xlog v0.0.0-20240415025414-1ab297de72e4
-	github.com/swxctx/xmodel v0.0.0-20241220060833-1ce687de6b45
-)
-`

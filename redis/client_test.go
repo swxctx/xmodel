@@ -8,10 +8,7 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	cfg, err := ReadConfig("test_redis")
-	if err != nil {
-		t.Fatal("ReadConfig(\"test_redis\")", err)
-	}
+	cfg := NewConfig()
 	c, err := NewClient(cfg)
 	if err != nil {
 		t.Fatal("NewClient(\"test_redis\")", err)
