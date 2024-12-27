@@ -32,7 +32,6 @@ var tplFiles = map[string]string{
 
 import (
 	"strings"
-	"time"
 
 	"github.com/swxctx/xmodel/mongo"
 	"github.com/swxctx/xmodel/mysql"
@@ -238,7 +237,7 @@ func Insert{{.Name}}(_{{.LowerFirstLetter}} *{{.Name}}, tx ...*sqlx.Tx) ({{if .I
 //  Update all fields except the primary keys, 'created_at' key and 'deleted_ts' key, if _updateFields is empty.
 func Upsert{{.Name}}(_{{.LowerFirstLetter}} *{{.Name}}, _updateFields []string, tx ...*sqlx.Tx) ({{if .IsDefaultPrimary}}int64,{{end}}error) {
 	if _{{.LowerFirstLetter}}.UpdatedAt == 0 {
-		_{{.LowerFirstLetter}}.UpdatedAt = coarsetime.FloorTimeNow().Unix()
+		_{{.LowerFirstLetter}}.UpdatedAt = time.Now().Unix()
 	}
 	if _{{.LowerFirstLetter}}.CreatedAt == 0 {
 		_{{.LowerFirstLetter}}.CreatedAt = _{{.LowerFirstLetter}}.UpdatedAt
@@ -337,7 +336,7 @@ func Update{{.Name}}ByPrimary(_{{.LowerFirstLetter}} *{{.Name}}, _updateFields [
 //  Don't update the primary keys, 'created_at' key and 'deleted_ts' key;
 //  Update all fields except the primary keys, '{{.ModelName}}' unique key, 'created_at' key and 'deleted_ts' key, if _updateFields is empty.
 func Update{{$.Name}}By{{.Name}}(_{{$.LowerFirstLetter}} *{{$.Name}}, _updateFields []string, tx ...*sqlx.Tx) error {
-	_{{$.LowerFirstLetter}}.UpdatedAt = coarsetime.FloorTimeNow().Unix()
+	_{{$.LowerFirstLetter}}.UpdatedAt = time.Now().Unix()
 	err := {{$.LowerFirstName}}DB.Callback(func(tx sqlx.DbOrTx) error {
 		query := "UPDATE {{$.NameSql}} SET "
 		if len(_updateFields) == 0 {
@@ -417,7 +416,7 @@ func Delete{{$.Name}}By{{.Name}}(_{{.ModelName}} {{.Typ}}, deleteHard bool, tx .
 
 	}else {
 		// Delay delete from the hard disk.
-		ts := coarsetime.FloorTimeNow().Unix()
+		ts := time.Now().Unix()
 		err = {{$.LowerFirstName}}DB.Callback(func(tx sqlx.DbOrTx) error {
 			_, err := tx.Exec("UPDATE {{$.NameSql}} SET ` + "`updated_at`=?, `deleted_ts`=?" + ` WHERE ` + "`{{.ModelName}}`=? AND `deleted_ts`=0;" + `", ts, ts, _{{.ModelName}})
 			return err
